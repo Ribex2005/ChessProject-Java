@@ -1,35 +1,30 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Player
-{
+public class Player {
     String name;
-    String color;  // "white" or "black"
+    String color; // "white" or "black"
     List<Piece> capturedPieces;
 
-     Player(String name, String color) {
+    Player(String name, String color) {
         this.name = name;
         this.color = color;
         this.capturedPieces = new ArrayList<>();
     }
-
-     String getName() {
-        return name;
+    String getName() { 
+        return name; 
     }
-
-     String getColor() {
-        return color;
+    String getColor() { 
+        return color; 
     }
-
-     List<Piece> getCapturedPieces() {
-        return capturedPieces;
+    List<Piece> getCapturedPieces() {
+        return capturedPieces; 
     }
-
-     void capturePiece(Piece piece) {
-        capturedPieces.add(piece);
+    void capturePiece(Piece piece) { 
+        capturedPieces.add(piece); 
     }
-    int countCapturedPieces() {
-         return capturedPieces.size();
+    int countCapturedPieces() { 
+        return capturedPieces.size(); 
     }
-
 }
+
