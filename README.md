@@ -1,16 +1,45 @@
 # ChessProject-Java
-This is my first project that I created using Java. I made a 2player chess game. 
-I created an abstract Piece class that is inherited by 6 classes (King, Queen, Rook, Bishop, Pawn and Knight) and handles the movement and capture logic of all the Pieces.
-I created a Board class that consists of a 8x8 Chess Board and Pieces. It contains the main logic of my chess board. It handles turn switching, checkmate and updation after each turn.
-I created a Player class to keep a track of the Players and the captured pieces.
-I created the ChessGame class as a Driver Class.
-Features:
-1. As soon as a Piece is selected, it is highlighted  yellow and when a piece is captured, it turns green.
-2. There is a panel after each capture displaying each players' captures.
-3. There is a pop-up  after each turn to indicate the respective player's turn.
-Future updates:
-1. Castling
-2. En passant
-3. Pawn promotion
+This is my first project in Java — a 2-player chess game built from scratch.
 
+## Project Structure
+- **Piece (abstract class)**  
+  - Inherited by 6 classes: King, Queen, Rook, Bishop, Knight, Pawn.  
+  - Handles movement and capture logic for each piece type.  
+
+- **Board class**  
+  - Implements an 8×8 chess board.  
+  - Contains the main game logic: turn switching, check/checkmate detection, move validation, and board updates.  
+
+- **Player class**  
+  - Keeps track of players and their captured pieces.  
+
+- **ChessGame class**  
+  - Serves as the driver class to run the game.  
+
+## Features
+- **Piece Selection & Captures**  
+  - Selected piece is highlighted yellow.  
+  - Captured piece’s square is highlighted green.  
+
+- **Captured Pieces Panel**  
+  - After each capture, a panel shows both players’ captured pieces.  
+
+- **Turn Indicator**  
+  - After each move, a popup notification displays whose turn it is.  
+
+- **Illegal Move Handling**  
+  - If a player attempts an invalid move, an alert popup is shown.  
+
+- **Move Validation**  
+  - Ensures only legal moves are executed.  
+
+- **User Experience**  
+  - Provides a smooth and interactive chess experience.  
+
+## Future Updates
+- Implement Castling  
+- Implement En Passant  
+- Implement Pawn Promotion  
+
+ Implement Pawn Promotion
 
