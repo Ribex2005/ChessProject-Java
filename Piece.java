@@ -1,293 +1,262 @@
-//Piece abstract class
-public abstract class Piece
+// Piece abstract class
+public abstract class Piece 
 {
-	int row, col;
-	String color;
-	Piece(String color, int row, int col)
-    	{
-        	this.row=row;
-        	this.col=col;
-        	this.color=color;
-    	}
-    	public String getColor()
-    	{
-        	return color;
-    	}
-    	public int getRow()
-    	{
-        	return row;
-    	}
-    	public int getCol()
-    	{
-        	return col;
-    	}
-  		 public void setPosition(int row, int col)
-    	{
-        	this.row=row;
-        	this.col=col;
-    	}
+    int row, col;
+    String color;
 
-		public abstract boolean isValidMove(int targetRow, int targetCol, Piece[][] board);
-    	public abstract String getSymbol();
+    Piece(String color, int row, int col) {
+        this.row = row;
+        this.col = col;
+        this.color = color;
+    }
 
+    public String getColor() { return color; }
+    public int getRow() {
+         return row; }
+    public int getCol() { 
+        return col; }
+
+    public void setPosition(int row, int col) {
+        this.row = row;
+        this.col = col;
+    }
+
+    public abstract boolean isValidMove(int targetRow, int targetCol, Piece[][] board);
+    public abstract String getSymbol();
 }
-class Pawn extends Piece
+
+class Pawn extends Piece 
 {
-	Pawn(String color, int row, int col)
-    	{
-        	super(color, row, col);
-    	}
-   	public String getSymbol()  
-	{
-		return color.equals("white") ? "♙" : "♟";
+    Pawn(String color, int row, int col) {
+        super(color, row, col);
+    }
 
- 	}
+    public String getSymbol() { 
+        return color.equals("white") ? "♙" : "♟"; 
+    }
+    public boolean isValidMove(int targetRow, int targetCol, Piece[][] board) 
+    {
+        if (targetRow == this.row && targetCol == this.col) 
+            return false;
+        int dir = color.equals("white") ? -1 : 1;   // white moves up (row - 1), black down (row + 1)
+        int startRow = color.equals("white") ? 6 : 1;
 
-	@Override
-	public boolean isValidMove(int targetRow, int targetCol,Piece[][] board)
-	{
-		boolean valid=false;
-		if (color.equals("white")) {
-			if (targetRow == this.row && targetCol == this.col)
-				return false;
+        if (targetCol == this.col) 
+        {
+            // one step
+            if (targetRow == this.row + dir && board[targetRow][targetCol] == null)
+                return true;
 
-			if (targetCol == this.col && targetRow == this.row - 1)
-				valid=true;
+            // two steps
+            if (this.row == startRow && targetRow == this.row + 2 * dir && board[this.row + dir][this.col] == null&& board[targetRow][targetCol] == null) 
+                return true;
 
-			// First move -> 2 steps
-			if (this.row == 6 && targetCol == this.col && targetRow == this.row - 2)
-				valid=true;
+            return false;
+        }
 
-		}
-		 else
-		{
-			if (targetCol == this.col && targetRow == this.row + 1)
-				valid= true;
+        // Diagonal capture 
+        if (Math.abs(targetCol - this.col) == 1 && targetRow == this.row + dir) 
+        {
+            Piece target = board[targetRow][targetCol];
+            return target != null && !target.getColor().equals(this.getColor());
+        }
 
-			// First move -> 2 steps
-			if (this.row == 1 && targetCol == this.col && targetRow == this.row + 2)
-				valid= true;
+        return false;
+    }
 
-		}
-		if (Math.abs(targetRow - this.row) == 1 && Math.abs(targetCol - this.col) == 1)
-		{
-			if (board[targetRow][targetCol]==null)
-				return false;
-			if (board[targetRow][targetCol].getColor().equals(this.getColor()))
-				return false;
-			else
-				valid=true;
-		}
-		 if (valid)
-		 {
-			 Piece targetPiece=board[targetRow][targetCol];
-			 if (targetPiece!=null && targetPiece.getColor().equals(this.getColor()))
-				 return false;
-			 return true;
-		 }
-		return false;
-	}
 }
-class King  extends Piece {
-	King(String color, int row, int col) {
-		super(color, row, col);
-	}
 
-	public String getSymbol() {
-		return color.equals("white") ? "♔" : "♚";
-
-	}
-
-	public boolean isValidMove(int targetRow, int targetCol, Piece[][] board)
-	{
-
-		if (targetRow == this.row && targetCol == this.col)
-			return false;
-		int rowDiff = Math.abs(targetRow - this.row);
-		int colDiff = Math.abs(targetCol - this.col);
-		if (rowDiff <=1  &&  colDiff <=1)
-		{
-			Piece targetPiece = board[targetRow][targetCol];
-			if (targetPiece!=null && targetPiece.getColor().equals(this.getColor()))
-				return false;
-			return true;
-		}
-		return false;
-	}
-}
-class Queen extends Piece {
-	Queen(String color, int row, int col) {
-		super(color, row, col);
-	}
-
-	public String getSymbol() {
-		return color.equals("white") ? "♕" : "♛";
-
-	}
-
-	public boolean isValidMove(int targetRow, int targetCol, Piece[][] board)
-	{
-		if (targetRow == this.row && targetCol == this.col)
-			return false;
-
-		int rowDiff = Math.abs(targetRow - this.row);
-		int colDiff = Math.abs(targetCol - this.col);
-
-		if (rowDiff != colDiff)
-			return false;
-
-		int rowDirection = (targetRow > this.row) ? 1 : -1;
-		int colDirection = (targetCol > this.col) ? 1 : -1;
-		int currentRow= this.row+rowDirection;
-		int currentCol= this.col+colDirection;
-
-		while (currentRow != targetRow && currentCol != targetCol) {
-			if (board[currentRow][currentCol] != null)
-				return false; // path is blocked
-			currentRow = currentRow+ rowDirection;
-			currentCol = currentCol+ colDirection;
-		}
-
-		Piece targetPiece = board[targetRow][targetCol];
-		if (targetPiece != null && targetPiece.getColor().equals(this.getColor()))
-			return false;
-
-		return true;
-
-	}
-}
-class Bishop extends Piece
+class King extends Piece 
 {
-	Bishop(String color, int row, int col)
-	{
-		super(color,row,col);
-	}
-	public String getSymbol() 
-	{
-    		return color.equals("white") ? "♗" : "♝";		
+    King(String color, int row, int col) {
+        super(color, row, col);
+    }
 
-	}
-	public boolean isValidMove(int targetRow, int targetCol, Piece[][] board) {
-		if (targetRow == this.row && targetCol == this.col)
-			return false;
+    public String getSymbol() {
+         return color.equals("white") ? "♔" : "♚"; }
 
-		int rowDiff = Math.abs(targetRow - this.row);
-		int colDiff = Math.abs(targetCol - this.col);
+    public boolean isValidMove(int targetRow, int targetCol, Piece[][] board) 
+    {
+        if (targetRow == this.row && targetCol == this.col) 
+            return false;
+        int rowDiff = Math.abs(targetRow - this.row);
+        int colDiff = Math.abs(targetCol - this.col);
 
-		if (rowDiff != colDiff)
-			return false;
-
-		int rowDirection = (targetRow > this.row) ? 1 : -1;
-		int colDirection = (targetCol > this.col) ? 1 : -1;
-		int currentRow= this.row+rowDirection;
-		int currentCol= this.col+colDirection;
-
-		while (currentRow != targetRow && currentCol != targetCol) {
-			if (board[currentRow][currentCol] != null)
-				return false; // path is blocked
-			currentRow = currentRow+ rowDirection;
-			currentCol = currentCol+ colDirection;
-		}
-
-		Piece targetPiece = board[targetRow][targetCol];
-		if (targetPiece != null && targetPiece.getColor().equals(this.getColor()))
-			return false;
-
-		if (targetCol == col && targetRow <= 7) {
-			int initial=Math.min(targetRow,this.row)+1;
-			int end=Math.max(targetRow,this.row);
-			for (int i = initial; i < end; i++) {
-				if ( board[i][targetCol] != null)
-					return false;
-			}
-			if (targetPiece != null && targetPiece.getColor().equals(this.color))
-				return false;
-			return true;
-		}
-		if (targetRow == row && targetCol <= 7) {
-			int initial=Math.min(targetCol,this.col)+1;
-			int end=Math.max(targetCol,this.col);
-			for (int i = initial; i < end; i++) {
-				if (board[targetRow][i] != null )
-					return false;
-			}
-			if (targetPiece != null && targetPiece.getColor().equals(this.color))
-				return false;
-			return true;
-		}
-		return true;
-	}
-
+        if (rowDiff <= 1 && colDiff <= 1)
+        {
+            Piece targetPiece = board[targetRow][targetCol];
+            if (targetPiece != null && targetPiece.getColor().equals(this.getColor())) 
+                return false;
+            return true;
+        }
+        return false;
+    }
 }
-class Knight extends Piece
+
+class Queen extends Piece 
 {
-	Knight(String color, int row, int col)
-	{
-		super(color,row,col);
-	}
-	public String getSymbol() 
-	{
-    		return color.equals("white") ? "♘" : "♞";
+    Queen(String color, int row, int col) {
+        super(color, row, col);
+    }
 
-	}
-	public boolean isValidMove(int targetRow, int targetCol, Piece[][] board)
-	{
-			if (targetRow == this.row && targetCol == this.col)
-				return false;
-			int rowDiff=Math.abs(targetRow - this.row);
-			int colDiff=Math.abs(targetCol - this.col);
-			if ((rowDiff ==2 && colDiff ==1)||(rowDiff ==1 && colDiff ==2)){
-				Piece targetPiece=board[targetRow][targetCol];
-				if (targetPiece!=null && targetPiece.getColor().equals(this.getColor()))
-					return false;
-				return true;
+    public String getSymbol() {
+         return color.equals("white") ? "♕" : "♛"; }
 
-			}
-		return false;
-	}
+    public boolean isValidMove(int targetRow, int targetCol, Piece[][] board) 
+    {
+        if (targetRow == this.row && targetCol == this.col) 
+            return false;
+
+        int rowDiff = Math.abs(targetRow - this.row);
+        int colDiff = Math.abs(targetCol - this.col);
+
+        // Bishop-like (diagonal)
+        if (rowDiff == colDiff) 
+        {
+            int rStep = (targetRow > this.row) ? 1 : -1;
+            int cStep = (targetCol > this.col) ? 1 : -1;
+            int r = this.row + rStep, c = this.col + cStep;
+            while (r != targetRow || c != targetCol) 
+            {
+                if (board[r][c] != null) 
+                    return false;
+                r += rStep; 
+                c += cStep;
+            }
+            Piece t = board[targetRow][targetCol];
+            return t == null || !t.getColor().equals(this.getColor());
+        }
+
+        // Rook-like (same row or same column)
+        if (this.row == targetRow || this.col == targetCol) 
+        {
+            if (this.row == targetRow) 
+            {
+                int step = (targetCol > this.col) ? 1 : -1;
+                for (int c = this.col + step; c != targetCol; c += step) 
+                {
+                    if (board[this.row][c] != null) 
+                        return false;
+                }
+            } 
+            else 
+            {
+                int step = (targetRow > this.row) ? 1 : -1;
+                for (int r = this.row + step; r != targetRow; r += step) 
+                {
+                    if (board[r][this.col] != null)
+                        return false;
+                }
+            }
+            Piece t = board[targetRow][targetCol];
+            return t == null || !t.getColor().equals(this.getColor());
+        }
+        return false;
+    }
+}
+
+class Bishop extends Piece 
+{
+    Bishop(String color, int row, int col) {
+        super(color, row, col);
+    }
+
+    public String getSymbol() { 
+        return color.equals("white") ? "♗" : "♝"; }
+
+    public boolean isValidMove(int targetRow, int targetCol, Piece[][] board) 
+    {
+        if (targetRow == this.row && targetCol == this.col) return false;
+
+        int rowDiff = Math.abs(targetRow - this.row);
+        int colDiff = Math.abs(targetCol - this.col);
+        if (rowDiff != colDiff) 
+            return false;
+
+        int rStep = (targetRow > this.row) ? 1 : -1;
+        int cStep = (targetCol > this.col) ? 1 : -1;
+        int r = this.row + rStep, c = this.col + cStep;
+        while (r != targetRow || c != targetCol) 
+        {
+            if (board[r][c] != null) 
+                return false;
+            r += rStep; 
+            c += cStep;
+        }
+        Piece t = board[targetRow][targetCol];
+        return t == null || !t.getColor().equals(this.getColor());
+    }
 
 }
-class Rook extends Piece {
-	Rook(String color, int row, int col) {
-		super(color, row, col);
-	}
 
-	public String getSymbol() {
-		return color.equals("white") ? "♖" : "♜";
+class Knight extends Piece 
+{
+    Knight(String color, int row, int col) {
+        super(color, row, col);
+    }
 
-	}
+    public String getSymbol() { 
+        return color.equals("white") ? "♘" : "♞"; }
 
-	public boolean isValidMove(int targetRow, int targetCol,Piece[][] board)
-	{
-		//boolean valid=false;
-		if (targetRow == this.row && targetCol == this.col)
-			return false;
-		Piece targetPiece=board[targetRow][targetCol];
+    public boolean isValidMove(int targetRow, int targetCol, Piece[][] board) 
+    {
+        if (targetRow == this.row && targetCol == this.col) 
+            return false;
+        int rowDiff = Math.abs(targetRow - this.row);
+        int colDiff = Math.abs(targetCol - this.col);
 
-		if (targetCol == col && targetRow <= 7) {
-			int initial=Math.min(targetRow,this.row)+1;
-			int end=Math.max(targetRow,this.row);
-			for (int i = initial; i < end; i++) {
-				if ( board[i][targetCol] != null)
-					return false;
-			}
-			if (targetPiece != null && targetPiece.getColor().equals(this.color))
-				return false;
-			return true;
-		}
-		if (targetRow == row && targetCol <= 7) {
-			int initial=Math.min(targetCol,this.col)+1;
-			int end=Math.max(targetCol,this.col);
-			for (int i = initial; i < end; i++) {
-				if (board[targetRow][i] != null )
-					return false;
-			}
-			if (targetPiece != null && targetPiece.getColor().equals(this.color))
-				return false;
-			return true;
-		}
+        if ((rowDiff == 2 && colDiff == 1) || (rowDiff == 1 && colDiff == 2)) 
+        {
+            Piece targetPiece = board[targetRow][targetCol];
+            if (targetPiece != null && targetPiece.getColor().equals(this.getColor())) 
+                return false;
+            return true;
+        }
+        return false;
+    }
+}
 
-		return false;
-	}
+class Rook extends Piece 
+{
+    Rook(String color, int row, int col) {
+        super(color, row, col);
+    }
 
+    public String getSymbol() { 
+        return color.equals("white") ? "♖" : "♜"; }
+
+    public boolean isValidMove(int targetRow, int targetCol, Piece[][] board) 
+    {
+        if (targetRow == this.row && targetCol == this.col) 
+            return false;
+        Piece targetPiece = board[targetRow][targetCol];
+
+        if (targetCol == col && targetRow <= 7) 
+        {
+            int initial = Math.min(targetRow, this.row) + 1;
+            int end = Math.max(targetRow, this.row);
+            for (int i = initial; i < end; i++) 
+            {
+                if (board[i][targetCol] != null) 
+                    return false;
+            }
+            if (targetPiece != null && targetPiece.getColor().equals(this.color)) 
+                return false;
+            return true;
+        }
+
+        if (targetRow == row && targetCol <= 7) 
+        {
+            int initial = Math.min(targetCol, this.col) + 1;
+            int end = Math.max(targetCol, this.col);
+            for (int i = initial; i < end; i++) {
+                if (board[targetRow][i] != null) 
+                    return false;
+            }
+            if (targetPiece != null && targetPiece.getColor().equals(this.color)) 
+                return false;
+            return true;
+        }
+        return false;
+    }
 }
