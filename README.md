@@ -41,5 +41,3 @@ This is my first project in Java — a 2-player chess game built from scratch.
 - Implement En Passant  
 - Implement Pawn Promotion  
 
- Implement Pawn Promotion
-
